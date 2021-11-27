@@ -1,13 +1,23 @@
 import { Application,Router  } from "https://deno.land/x/oak/mod.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 const db = new DB("datamain.sqlite");
 const router = new Router()
 const app = new Application();
-
+app.use(
+    oakCors({
+      origin: "*"
+    }),
+);
 router.get("/",(ctx)=>{
   let query = db.query("select * from tblsekolah");
-
-  ctx.response.body =  JSON.stringify(query)
+  ctx.response.body = query
+})
+router.get("/details/:nama",(ctx)=>{
+  let nama = ctx.params.nama
+  let query = db.query("select * from tblsekolah where nama = ?",[nama])
+  console.log(query)
+  ctx.response.body = query
 })
 router.post("/add",async(ctx)=>{
    const body = ctx.request.body({ type: 'form' })
@@ -15,13 +25,14 @@ router.post("/add",async(ctx)=>{
   let nama = value.get('nama')
   let jurusan = value.get('jurusan')
   let judul = value.get("judul")
+  let status = value.get('status')
   try{
-      let query = db.query(`insert into tblsekolah ('nama','judul','jurusan')values ('${nama}','${judul}','${jurusan}')`);
+      let query = db.query(`insert into tblsekolah ('nama','judul','jurusan','status')values ('${nama}','${judul}','${jurusan}','${status}')`);
       console.log("created" +  query)
       ctx.response.body = "data created"
     }catch(err){
       console.log("errr" +  err)
-      ctx.response.body =  err
+      ctx.response.body =  err.message
     }
 
 })
@@ -42,15 +53,14 @@ router.delete("/delete/:id",(ctx)=>{
   }
 })
 
-router.put("/verified/:id/:nama",(ctx)=>{
+router.put("/verified/:id",(ctx)=>{
   let params =  ctx.params.id
-  let nama = ctx.params.nama.toString()
-  let status = 'not'
-  let input = [status,params]
+  let status = 'verified'
     try{
-    let query =  db.query("update tblsekolah SET status =? where id =?",['not',params])
-
-    ctx.response.body = {"status":"data " + params + " terupdate"}
+    let query =  db.query("update tblsekolah SET status = ? where id = ?",[status,params])
+    if(query){
+      ctx.response.body = "data update"
+    }
   }catch(err){
     ctx.response.body = {"failed":"data error"}
     ctx.response.status = 404
