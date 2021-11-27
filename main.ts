@@ -1,6 +1,11 @@
 import { Application,Router  } from "https://deno.land/x/oak/mod.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
+// let location = Deno.openSync("datamain.sqlite",{read:true, write:true})
+import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
+import { hash, verify } from "https://deno.land/x/scrypt/mod.ts";
+
+const file = Deno.openSync("datamain.sqlite", { read: true, write: true });
 const db = new DB("datamain.sqlite");
 const router = new Router()
 const app = new Application();
@@ -9,6 +14,49 @@ app.use(
       origin: "*"
     }),
 );
+
+// TBL USER LOGIN CHECK
+
+router.post("/user/login",async(ctx)=>{
+const body = ctx.request.body({ type: 'form' })
+  const value = await body.value
+  let username = value.get('username')
+  let password = value.get('password')
+  try{
+    let query = db.query("select * from tbluser where username = ? and password = ?",[username,password])
+    if(query.length ==  1){
+      console.log(query.indexOf(3))
+      ctx.response.body = "user found"
+    }
+  }catch(err){
+    ctx.response.body = {"error":"not found"}
+    ctx.response.status = 500
+  }
+})
+
+
+//TBL USER REGISTER
+router.post("/user/add",async(ctx)=>{
+const body = ctx.request.body({ type: 'form' })
+  const value = await body.value
+  let username = value.get('username')
+  let password = value.get('password')
+  let nik = value.get('nik')
+// v4 unique id
+let uniqid = v4.generate();
+const hashResult = await hash(password || "");
+  try{
+    let query = db.query(`insert into tbluser
+     (id,username,password,nik,active) values ('${uniqid}','${username}','${hashResult}','${nik}','not')`)
+    ctx.response.body = "created"
+  }catch(err){
+    ctx.response.body = err.message
+    ctx.response.status = 500
+  }
+})
+
+
+//SKRIPSI
 router.get("/",(ctx)=>{
   let query = db.query("select * from tblsekolah");
   ctx.response.body = query
