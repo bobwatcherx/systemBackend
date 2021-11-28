@@ -1,1 +1,1 @@
-web: deno run --allow-net --allow-read --allow-write --cached-only opine.js --port=${PORT}
+web: deno run --allow-net --allow-read --allow-write --cached-only opine.js 
