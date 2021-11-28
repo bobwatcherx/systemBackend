@@ -14,16 +14,9 @@ app.post("/add", function (req, res) {
   res.send(req.body);
 });
 // app.addEventListener("listen",()=>console.log("run on 8080"))
-const {args, exit} = Deno;
-const DEFAULT_PORT = 8000;
-const argPort = flags.parse(args).port;
-const port = argPort ? Number(argPort) : DEFAULT_PORT;
-if (isNaN(port)){
-console.log("This is not port number");
-exit(1);
-};
+const DEFAULT_PORT = parseInt(Deno.env.get('PORT') ?? '8000');
 console.log("server runn on" +  DEFAULT_PORT)
 app.listen(
   DEFAULT_PORT,
-  () => console.log("server has started on http://localhost:3000 🚀"),
+  () => console.log("server has started " +DEFAULT_PORT 🚀),
 );
