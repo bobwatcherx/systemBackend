@@ -11,7 +11,7 @@ app.get("/",(req,res)=>{
   res.send("run server")
 })
 app.post("/add", function (req, res) {
-  res.send(req.body);
+  res.send(req.body.username);
 });
 // app.addEventListener("listen",()=>console.log("run on 8080"))
 const {args, exit} = Deno;
