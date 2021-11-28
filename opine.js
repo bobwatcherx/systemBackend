@@ -7,6 +7,9 @@ const app = opine();
 app.use(opineCors({
   origin:"*"
 }))
+app.get("/",(req,res)=>{
+  res.send("run server")
+})
 app.post("/add", function (req, res) {
   res.send(req.body);
 });
