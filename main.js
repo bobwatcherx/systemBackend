@@ -6,7 +6,7 @@ import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
 import { createHash } from "https://deno.land/std@0.91.0/hash/mod.ts";
 import * as flags from 'https://deno.land/std/flags/mod.ts';
 
-const file = Deno.openSync("datamain.sqlite", { read: true, write: true });
+// const file = Deno.openSync("datamain.sqlite", { read: true, write: true });
 const db = new DB("datamain.sqlite");
 const router = new Router()
 const app = new Application();
