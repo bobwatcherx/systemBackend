@@ -47,21 +47,25 @@ let haspresult = hashp.toString();
 
 //TBL USER REGISTER
 router.post("/user/add",async(ctx)=>{
-const body = ctx.request.body({ type: 'form' })
-  const value = await body.value
-  let username = value.get('username')
-  let password = value.get('password')
-  let nik = value.get('nik')
+const body = ctx.request.body()
+console.log(body)
+  // const value = await body.value
+  // let username = value.get('username')
+  // let password = value.get('password')
+  // let nik = value.get('nik')
+  console.log(username +  password  + nik)
 // v4 unique id
 let uniqid = v4.generate();
 let hash = createHash("md5");
 hash.update("dush");
 let hashResult = hash.toString();
   try{
-    let query = db.query(`insert into tbluser
+    let query =  db.query(`insert into tbluser
      (id,username,password,nik,active) values ('${uniqid}','${username}','${hashResult}','${nik}','not')`)
+    console.log(JSON.stringify(query))
     ctx.response.body = "created"
   }catch(err){
+    console.log(err.message)
     ctx.response.body = err.message
     ctx.response.status = 500
   }
@@ -70,7 +74,7 @@ let hashResult = hash.toString();
 
 //SKRIPSI
 router.get("/",(ctx)=>{
-  let query = db.query("select * from tblsekolah");
+  let query = db.query("se2lect * from tblsekolah");
   let temp = []
   let main = Object.values(query).forEach((key)=>{
 
