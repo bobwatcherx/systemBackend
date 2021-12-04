@@ -22,6 +22,32 @@ app.get("/",(req,res)=>{
   res.send("run server")
 })
 
+// LIHAT SEMUA POSTINGAN
+app.get("/post/all",(req,res)=>{
+  try{
+    let query =  db.query("select * from tblsekolah" )
+    let main = Object.values(query)
+    let mdat = []
+     main.forEach((p)=>{
+      mdat = [...mdat,{
+        id:p[0],
+        nama:p[1],
+        jurusan:p[2],
+        judul:p[3],
+        date:p[4],
+        status:p[5]
+      }]
+    })
+     console.log(mdat)
+    res.send({"status":"found","data":mdat})
+  }catch(err){
+ 
+    res.setStatus(500)
+    res.send({"status":"error","data":err})
+    console.log(err)
+  }
+})
+
 
 // EDIT POSTINGAN ID
 app.put("/edit/:id",(req,res)=>{
@@ -37,6 +63,21 @@ app.put("/edit/:id",(req,res)=>{
     res.setStatus(500)
     res.send({"status":"error","data":err})
     console.log(err)
+  }
+})
+// EDIT NONVERFIED ID
+app.put("/noverified/:id",(req,res)=>{
+  let id = req.params.id
+  let status = 'not'
+
+  try{
+    let query =  db.query("update tblsekolah SET status = ? where id = ?",[status,id])
+    if(query){
+      res.send({"status":"not activated"})
+    }
+  }catch(err){
+    res.setStatus(500)
+    res.send({"status":"error","data":err})
   }
 })
 
